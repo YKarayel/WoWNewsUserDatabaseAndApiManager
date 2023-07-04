@@ -34,11 +34,11 @@ builder.Services.AddDbContext<AppDbContext>(x =>
 
 var app = builder.Build();
 
-//using (var scope = app.Services.CreateScope())
-//{
-//    var firestoreManager = scope.ServiceProvider.GetRequiredService<IFirestoreManager>();
-//    await firestoreManager.RetrieveAllDocuments("wownews-8d9b8");
-//}
+using (var scope = app.Services.CreateScope())
+{
+    var firestoreManager = scope.ServiceProvider.GetRequiredService<IFirestoreManager>();
+    await firestoreManager.RetrieveAllDocuments("wownews-8d9b8");
+}
 
 
 // Configure the HTTP request pipeline.
