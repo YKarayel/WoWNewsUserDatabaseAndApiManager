@@ -1,50 +1,33 @@
-﻿using Google.Apis.Auth.OAuth2;
-using Microsoft.Identity.Client.Platforms.Features.DesktopOs.Kerberos;
-using FirebaseAdmin;
-using FirebaseAdmin.Auth;
-using Google.Cloud.Firestore;
-using Google.Cloud.Firestore.V1;
+﻿using Google.Cloud.Firestore;
+using WoWNewsApi.Firestore.Core;
+using WoWNewsApi.Firestore.Repo;
 using WoWNewsApi.Models;
-using System.Data.SqlTypes;
-using WoWNewsApi.UnitOfWork;
-using WoWNewsApi.Services.Contracts;
 using WoWNewsApi.Services;
-using Microsoft.IdentityModel.Tokens;
-using Google.Protobuf.WellKnownTypes;
-using System.Linq.Expressions;
+using WoWNewsApi.Services.Contracts;
+using WoWNewsApi.UnitOfWork;
 
 namespace WoWNewsApi.FirestoreDbManager
 {
-
-    public class FirestoreManager : IFirestoreManager
-
+    public class AddFirestoreDataToSql : IAddFirestoreDataToSql
     {
+        int addeduser;
+        int scannedUser;
+
+        private readonly IConnectFirestore _connectFirestore;
         private readonly IUnitOfWork _uniofwork;
         private readonly IUserService _userService;
-        int x = 1;
 
-        public FirestoreManager(IUnitOfWork uniofwork, IUserService userService)
+        public AddFirestoreDataToSql(IConnectFirestore connectFirestore, IUnitOfWork uniofwork, IUserService userService)
         {
+            _connectFirestore = connectFirestore;
             _uniofwork = uniofwork;
             _userService = userService;
         }
 
-        public async Task RetrieveAllDocuments(string project)
+        public async Task TakeUserData()
         {
-
-            //Firestore credential
-            try
-            {
-                var filepath = @"C:\\Users\\yhyk\\Desktop\\WoW News\\wownews-8d9b8-firebase-adminsdk-phqt7-6c6ea24f27.json";
-                Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", filepath);
-
-
-            }
-            catch (FileNotFoundException ex) { Console.WriteLine(ex.Message); }
-
-
-            //Get Instance From FireStore
-            FirestoreDb db = FirestoreDb.Create(project);
+            
+            var db = await _connectFirestore.FirestoreContextAsync();
 
 
             //Collecting Data...
@@ -61,66 +44,62 @@ namespace WoWNewsApi.FirestoreDbManager
                     object value = mappedDocuments["email"];
 
                     user.Email = value.ToString();
-                   
-                }
 
+                }
+                
                 if (mappedDocuments.ContainsKey("uid"))
                 {
                     object value = mappedDocuments["uid"];
 
                     user.Uid = value.ToString();
-                   
+
                 }
                 if (mappedDocuments.ContainsKey("token"))
                 {
                     object value = mappedDocuments["token"];
 
                     user.Token = value.ToString();
-              
+
                 }
                 if (mappedDocuments.ContainsKey("date"))
                 {
                     object value = mappedDocuments["date"];
 
                     user.CreatedDate = value.ToString();
-                 
+
                 }
 
 
+                var checkUser = await _userService.GetByUidAsync(user.Uid);
 
-                //Verify data existence in MsSql
-                //Then adding new User
-                
-                
-               var checkUser = await _userService.GetByUidAsync(user.Uid);
-                
                 if (user.Uid != checkUser?.Uid)
                 {
                     try
                     {
                         await _userService.AddAsync(user);
+                        addeduser++;
                     }
                     catch (Exception ex)
                     {
                         Console.WriteLine(ex.StackTrace);
                     }
-                    
-                    Console.WriteLine($"Added total user:  {x}");
-                    x++;
                 }
-
-
                 else
-                {
                     Console.WriteLine("There is an already existing user ");
-                   
-                }
                 
             }
-            Console.WriteLine("");
+            Console.WriteLine($"The total number of users written to the database is {addeduser}");
+            
+
+
 
 
 
         }
+
     }
+
 }
+
+
+

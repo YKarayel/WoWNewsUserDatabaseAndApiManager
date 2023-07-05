@@ -1,5 +1,7 @@
 using FirebaseAdmin.Auth;
 using Microsoft.EntityFrameworkCore;
+using WoWNewsApi.Firestore.Core;
+using WoWNewsApi.Firestore.Repo;
 using WoWNewsApi.FirestoreDbManager;
 using WoWNewsApi.Repositories;
 using WoWNewsApi.Repositories.Contracts;
@@ -25,7 +27,8 @@ builder.Services.AddScoped(typeof(IService<>), typeof(Service<>));
 
 builder.Services.AddScoped<IUserRepository, UserRepositoriy>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IFirestoreManager, FirestoreManager>();
+builder.Services.AddScoped<IConnectFirestore, ConnectFirestore>();
+builder.Services.AddScoped<IAddFirestoreDataToSql, AddFirestoreDataToSql>();
 
 
 builder.Services.AddDbContext<AppDbContext>(x =>
@@ -36,8 +39,8 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var firestoreManager = scope.ServiceProvider.GetRequiredService<IFirestoreManager>();
-    await firestoreManager.RetrieveAllDocuments("wownews-8d9b8");
+    var firestoreManager = scope.ServiceProvider.GetRequiredService<IAddFirestoreDataToSql>();
+    await firestoreManager.TakeUserData();
 }
 
 
