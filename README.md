@@ -1,5 +1,5 @@
 # WoWNewsUserDatabaseAndApiManager
-It is a project made to get the user data of my application (Wow News), from Firestore and send it to Sql and to access this data when a request comes to the API.
+It is a project made to get the user data of my application (Wow News), from Firestore and send it to Sql and to access this data when a request comes to the NLayer API.
 
 
 
