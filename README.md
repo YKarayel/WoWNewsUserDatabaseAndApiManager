@@ -3,5 +3,6 @@ It is a project made to get the user data of my application (Wow News), from Fir
 
 
 
-https://play.google.com/store/apps/details?id=com.nexuswawe.wownews&hl=en_US
-https://github.com/YKarayel/WoWNewsUserDatabaseAndApiManager/assets/121500914/203d2163-817b-4f45-8214-8ae4c59f149d
+The App: https://play.google.com/store/apps/details?id=com.nexuswawe.wownews&hl=en_US
+
+https://github.com/YKarayel/WoWNewsUserDatabaseAndApiManager/assets/121500914/c7f1a7a2-5951-46dc-a37d-21889364bce4
